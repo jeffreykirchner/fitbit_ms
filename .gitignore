@@ -1,5 +1,5 @@
 logs/*
-ESIMassEmailerEnv
+fitbit_msEnv
 .vscode/*
 *.pyc
 local_settings.py

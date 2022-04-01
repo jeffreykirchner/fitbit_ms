@@ -43,7 +43,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'ESIMassEmailer.urls'
+ROOT_URLCONF = 'fitbit_ms.urls'
 
 TEMPLATES = [
     {
@@ -61,7 +61,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'ESIMassEmailer.wsgi.application'
+WSGI_APPLICATION = 'fitbit_ms.wsgi.application'
 
 
 # Password validation

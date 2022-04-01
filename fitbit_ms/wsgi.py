@@ -1,5 +1,5 @@
 """
-WSGI config for ESIMassEmailer project.
+WSGI config for fitbit_ms project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ESIMassEmailer.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'fitbit_ms.settings')
 
 application = get_wsgi_application()
