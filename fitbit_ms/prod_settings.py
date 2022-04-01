@@ -77,17 +77,5 @@ LOGGING = {
     },
 }
 
-#simulate sending without sending live email
-SIMULATE_SEND = False
-
-#emails
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'   #log email to console
-EMAIL_HOST = 'exchange.chapman.edu'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-EMAIL_HOST_USER_NAME = 'ESI Recruiter, Chapman University'
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
-EMAIL_USE_TLS = True
-EMAIL_TIMEOUT = 600
-DEFAULT_FROM_EMAIL = os.environ['EMAIL_HOST_USER']
-EMAIL_TEST_ACCOUNT = os.environ['EMAIL_TEST_ACCOUNT']          #all outgoing email sent here when in debug mode
+FITBIT_CLIENT_ID =  os.environ['FITBIT_CLIENT_ID']
+FITBIT_AUTHORIZATION = os.environ['FITBIT_AUTHORIZATION']

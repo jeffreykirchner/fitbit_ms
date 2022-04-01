@@ -12,6 +12,10 @@ urlpatterns = [
 
     path('', views.root_path),
 
+    path('get-metrics', views.GetMetrics.as_view(), name="get_metrics"),
+
+    path('fitbit-registration',views.FitbitRegistration.as_view(), name='fitbit_registration'),
+
     #txt
     path('robots.txt', views.RobotsTxt, name='robotsTxt'),
     path('ads.txt', views.AdsTxt, name='adsTxt'),
