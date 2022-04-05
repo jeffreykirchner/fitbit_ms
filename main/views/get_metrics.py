@@ -22,7 +22,10 @@ class GetMetrics(APIView):
         return dic of fitbit metrics
         '''
         logger = logging.getLogger(__name__)
-        
+
+
+        logger.info(request.data)
+
         fitbit_user = request.data.get("fitbit_user")
         metrics_dict = request.data.get("metrics_dict")
 
