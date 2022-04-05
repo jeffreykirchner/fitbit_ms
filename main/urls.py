@@ -14,7 +14,8 @@ urlpatterns = [
 
     path('get-metrics', views.GetMetrics.as_view(), name="get_metrics"),
 
-    path('fitbit-registration',views.FitbitRegistration.as_view(), name='fitbit_registration'),
+    path('fitbit-registration/<path:return_url>', views.FitbitRegistration.as_view(), name='fitbit_registration'),
+    path('fitbit-registration-response/', views.FitbitRegistrationResponse.as_view(), name='fitbit_registration'),
 
     #txt
     path('robots.txt', views.RobotsTxt, name='robotsTxt'),

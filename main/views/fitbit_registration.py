@@ -4,11 +4,15 @@ get fitbit metrics view
 
 
 import logging
+import json
 
 from django.views import View
 from django.shortcuts import render
+from django.shortcuts import redirect
 
 from main.globals import get_fitbit_link
+
+from main.models import RegistrationRequest
 
 class FitbitRegistration(View):
     '''
@@ -20,7 +24,18 @@ class FitbitRegistration(View):
         '''
         handle get requests
         '''
-
-        return render(request=request,
-                      template_name=self.template_name,
-                      context={"fitbit_link" : get_fitbit_link()})
+        logger = logging.getLogger(__name__)         
+        
+        try:
+            
+            r = RegistrationRequest()
+            r.return_url = kwargs["return_url"]
+            r.save()
+            
+        except Exception as e:
+            logger.warning(f"Registration failed: {e}")
+            return render(request=request,
+                          template_name=self.template_name,
+                          context={})
+        
+        return redirect(get_fitbit_link(r.id))

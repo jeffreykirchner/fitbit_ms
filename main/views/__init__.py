@@ -5,6 +5,7 @@ from .txt import *
 from .root_path import *
 
 from .get_metrics import GetMetrics
-from .fitbit_registration import  FitbitRegistration
+from .fitbit_registration import FitbitRegistration
+from .fitbit_registration_response import FitbitRegistrationResponse
 
 
