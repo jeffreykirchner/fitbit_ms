@@ -84,7 +84,7 @@ class FitbitRegistrationResponse(View):
         logger.info("Register Fitbit, Status: " + status) 
 
         if status == "success":
-            return redirect(registration_request.return_url.replace("user_id", fitbit_user.user_id))
+            return redirect("http://" + registration_request.return_url.replace("user_id", fitbit_user.user_id))
         else:
             pass
         
