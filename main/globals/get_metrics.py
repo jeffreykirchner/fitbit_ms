@@ -36,8 +36,11 @@ def get_metric(url, fitbit_user):
 
     r = get_metric_2(url, fitbit_user)
 
+    status = "success"
+    message = ""
+    
     #try to reauthorize
-    if 'success' in r:        
+    if not r.get('success', False):        
         headers = {'Authorization': 'Basic ' + str(settings.FITBIT_AUTHORIZATION) ,
                    'Content-Type' : 'application/x-www-form-urlencoded'}
         
@@ -56,10 +59,15 @@ def get_metric(url, fitbit_user):
             logger.info(r)
         else:
             logger.warning(f"Fitbit refresh failed: {r}")
+            status = "fail"
+            for e in r['errors']:
+                if e['errorType'] == 'invalid_grant':
+                    message = "re-connect required"
 
-        r = get_metric_2(url)
+        if status == "success":
+            r = get_metric_2(url, fitbit_user)
     
-    return r
+    return {'status':status, 'message' : message, 'result' : r}
 
 def get_metric_2(url, fitbit_user):
     logger = logging.getLogger(__name__)     
