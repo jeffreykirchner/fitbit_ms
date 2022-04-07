@@ -70,6 +70,9 @@ def get_metric(url, fitbit_user):
     return {'status':status, 'message' : message, 'result' : r}
 
 def get_metric_2(url, fitbit_user):
+    '''
+    try to pull metric
+    '''
     logger = logging.getLogger(__name__)     
 
     headers = {'Authorization': 'Bearer ' + fitbit_user.access_token,
