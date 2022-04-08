@@ -40,7 +40,7 @@ def get_metric(url, fitbit_user):
     message = ""
     
     #try to reauthorize
-    if not r.get('success', False):        
+    if type(r) == dict and not r.get('success', False):        
         headers = {'Authorization': 'Basic ' + str(settings.FITBIT_AUTHORIZATION) ,
                    'Content-Type' : 'application/x-www-form-urlencoded'}
         
