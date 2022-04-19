@@ -23,7 +23,7 @@ def get_metrics_from_dict(fitbit_user_id, fitbit_metrics_dict):
     except ObjectDoesNotExist :
         logger = logging.getLogger(__name__)     
         logger.error(f"get_metrics_from_dict: user not found {fitbit_user_id}")
-        return {}
+        return {"error" : f'user not found {fitbit_user_id}'}
 
     for i in fitbit_metrics_dict:        
         result[i] = get_metric(fitbit_metrics_dict[i], fitbit_user)
