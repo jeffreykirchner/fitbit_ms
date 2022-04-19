@@ -1,6 +1,8 @@
 '''
 get fitbit metrics
 '''
+from multiprocessing import Pool
+
 import urllib
 import logging
 import requests
@@ -17,18 +19,47 @@ def get_metrics_from_dict(fitbit_user_id, fitbit_metrics_dict):
     take a list dict of fitbit metrics to pull and return dict with responses
     '''
     result = {}
+    status = 'success'
+    message = 'metrics pulled successfully'
 
     try:
         fitbit_user = FitBitUser.objects.get(user_id=fitbit_user_id)
     except ObjectDoesNotExist :
         logger = logging.getLogger(__name__)     
         logger.error(f"get_metrics_from_dict: user not found {fitbit_user_id}")
-        return {"error" : f'user not found {fitbit_user_id}'}
+        status = "fail"
+        message = 'user not found'
 
-    for i in fitbit_metrics_dict:        
-        result[i] = get_metric(fitbit_metrics_dict[i], fitbit_user)
+    if status == 'success':
 
-    return result
+        if fitbit_user.check_need_to_refresh_access_token():
+            v = fitbit_user.refresh_access_token()        
+            status = v['status']
+            message = v['message']
+
+        #single thred pull
+        # for i in fitbit_metrics_dict:        
+        #     result[i] = get_metric(fitbit_metrics_dict[i], fitbit_user)
+
+        #     if result[i]["status"] == "fail":
+        #         message = result[i]["status"]
+        #         break
+
+        #multi thred pull
+        if status == "success":
+            try:
+                with Pool(len(fitbit_metrics_dict)) as p:
+                    
+                    result = {i:p.apply_async(func=get_metric,args=(fitbit_metrics_dict[i], fitbit_user)) for i in fitbit_metrics_dict}
+
+                    for i in result:
+                        result[i] = result[i].get()
+            except Exception as error:
+                logger.error(f"get_metrics_from_dict: {error}")
+                status = "fail"
+                message = "pull failed"
+
+    return {'status':status, 'message':message, 'result':result}
 
   #take fitbit api url and return response
 def get_metric(url, fitbit_user):
@@ -40,34 +71,16 @@ def get_metric(url, fitbit_user):
     message = ""
     
     #try to reauthorize
-    if type(r) == dict and not r.get('success', False):        
-        headers = {'Authorization': 'Basic ' + str(settings.FITBIT_AUTHORIZATION) ,
-                   'Content-Type' : 'application/x-www-form-urlencoded'}
+    if type(r) == dict and r.get('success', 'not found') == False:        
         
-        data = {'grant_type' : 'refresh_token',
-                'refresh_token' : fitbit_user.refresh_token}    
-        
-        r = requests.post('https://api.fitbit.com/oauth2/token', headers=headers, data=data).json()
+        v = fitbit_user.refresh_access_token()
 
-        if 'access_token' in r:
-            fitbit_user.access_token = r['access_token']
-            fitbit_user.refresh_token = r['refresh_token']
-
-            fitbit_user.save()
-
-            logger.info("Fitbit refresh: User " + str(fitbit_user.user_id))
-            logger.info(r)
-        else:
-            logger.warning(f"Fitbit refresh failed: {r}")
-            status = "fail"
-            for e in r['errors']:
-                if e['errorType'] == 'invalid_grant':
-                    message = "re-connect required"
-
-        if status == "success":
+        if v["status"] == "success":
             r = get_metric_2(url, fitbit_user)
+        else:
+            message = v["message"]
     
-    return {'status':status, 'message' : message, 'result' : r}
+    return {'status':status, 'message': message, 'result' : r}
 
 def get_metric_2(url, fitbit_user):
     '''
