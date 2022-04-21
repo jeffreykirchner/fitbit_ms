@@ -18,6 +18,8 @@ def get_metrics_from_dict(fitbit_user_id, fitbit_metrics_dict):
     '''
     take a list dict of fitbit metrics to pull and return dict with responses
     '''
+    logger = logging.getLogger(__name__)
+
     result = {}
     status = 'success'
     message = 'metrics pulled successfully'
@@ -73,12 +75,16 @@ def get_metric(url, fitbit_user):
     #try to reauthorize
     if type(r) == dict and r.get('success', 'not found') == False:        
         
-        v = fitbit_user.refresh_access_token()
+        #v = fitbit_user.refresh_access_token()
 
-        if v["status"] == "success":
-            r = get_metric_2(url, fitbit_user)
-        else:
-            message = v["message"]
+        status = "fail"
+        message = "pull failed"
+
+
+        # if v["status"] == "success":
+        #     r = get_metric_2(url, fitbit_user)
+        # else:
+        #     message = v["message"]
     
     return {'status':status, 'message': message, 'result' : r}
 
