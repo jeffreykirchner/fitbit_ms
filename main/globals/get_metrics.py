@@ -61,6 +61,12 @@ def get_metrics_from_dict(fitbit_user_id, fitbit_metrics_dict):
                 status = "fail"
                 message = "pull failed"
 
+            for i in result:
+                if result[i]['status'] == 'fail':
+                    status = "fail"
+                    message = result[i]['message']
+                    break
+
     return {'status':status, 'message':message, 'result':result}
 
   #take fitbit api url and return response
@@ -78,7 +84,12 @@ def get_metric(url, fitbit_user):
         #v = fitbit_user.refresh_access_token()
 
         status = "fail"
-        message = "pull failed"
+        errors = r.get('errors', 'not found')
+
+        if errors != 'not found':
+            message = r["errors"][0]['message']
+        else:
+            message = "pull failed"
 
 
         # if v["status"] == "success":
