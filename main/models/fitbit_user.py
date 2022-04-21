@@ -62,7 +62,7 @@ class FitBitUser(models.Model):
                 if e['errorType'] == 'invalid_grant':
                     message = "re-connect required"
 
-        return {"status":status, "message":""}
+        return {"status":status, "message": message}
 
     def check_need_to_refresh_access_token(self):
         '''
