@@ -109,7 +109,7 @@ def get_metric_2(url, fitbit_user):
                'Accept-Language' :	'en_US'}    
 
     try:            
-        r = requests.get(url, headers=headers)
+        r = requests.get(url, headers=headers, timeout=10)
 
         r = r.json()
 
