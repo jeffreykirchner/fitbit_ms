@@ -78,10 +78,9 @@ def get_metric(url, fitbit_user):
     status = "success"
     message = ""
     
-    #try to reauthorize
+   
     if type(r) == dict and r.get('success', 'not found') == False:        
-        
-        #v = fitbit_user.refresh_access_token()
+        #re-auth failed return error
 
         status = "fail"
         errors = r.get('errors', 'not found')
@@ -91,11 +90,10 @@ def get_metric(url, fitbit_user):
         else:
             message = "pull failed"
 
-
-        # if v["status"] == "success":
-        #     r = get_metric_2(url, fitbit_user)
-        # else:
-        #     message = v["message"]
+    elif type(r) == dict and r.get('status', 'not found') == 'fail':
+        status = "fail"
+        message = r["message"]
+        result = {}
     
     return {'status':status, 'message': message, 'result' : r}
 
@@ -118,8 +116,8 @@ def get_metric_2(url, fitbit_user):
 
         return r
     except Exception as e: 
-        logger.warning(f"get_metric_2 error: {e} , response: {r}")
-        return  "fail"
+        logger.warning(f"get_metric_2 error: {e}")
+        return  {'status':'fail', 'message': str(e)}
 
 def get_fitbit_link(temp_state):
     p = Parameters.objects.first()
