@@ -129,7 +129,12 @@ def get_fitbit_link(temp_state):
 
     tempClientID = settings.FITBIT_CLIENT_ID
     tempState = temp_state
-    fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20sleep%20settings%20profile%20weight&expires_in=604800&prompt=login%20consent&state={tempState}"
+    
+    # sleep
+    # fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20sleep%20settings%20profile%20weight&expires_in=604800&prompt=login%20consent&state={tempState}"
+
+    # no sleep
+    fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20settings%20profile%20weight&expires_in=604800&prompt=login%20consent&state={tempState}"
 
     return fitBit_Link
 
