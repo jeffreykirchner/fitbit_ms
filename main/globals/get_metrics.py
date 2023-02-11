@@ -54,8 +54,12 @@ def get_metrics_from_dict(fitbit_user_id, fitbit_metrics_dict):
                     
                     result = {i:p.apply_async(func=get_metric,args=(fitbit_metrics_dict[i], fitbit_user)) for i in fitbit_metrics_dict}
 
+                    p.close()
+                    p.join()
+
                     for i in result:
                         result[i] = result[i].get()
+
             except Exception as error:
                 logger.error(f"get_metrics_from_dict: {error}")
                 status = "fail"
