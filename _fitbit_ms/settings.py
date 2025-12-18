@@ -43,7 +43,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'fitbit_ms.urls'
+ROOT_URLCONF = '_fitbit_ms.urls'
 
 TEMPLATES = [
     {
@@ -61,7 +61,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'fitbit_ms.wsgi.application'
+WSGI_APPLICATION = '_fitbit_ms.wsgi.application'
 ADMIN_SITE_HEADER = 'Fitbit MS Administration'
 
 
