@@ -3,3 +3,4 @@ fitbit_msEnv
 .vscode/*
 *.pyc
 local_settings.py
+database_dumps
