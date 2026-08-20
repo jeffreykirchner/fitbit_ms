@@ -127,7 +127,7 @@ def get_fitbit_link(temp_state):
     p = Parameters.objects.first()
 
     #link to setup fitbit
-    tempURL = p.site_URL+"fitbit-registration-response/"
+    tempURL = p.site_URL+"fitbit-registration-response"
     tempURL = tempURL.replace(":","%3A")
     tempURL = tempURL.replace("/","%2F")
 
@@ -138,7 +138,9 @@ def get_fitbit_link(temp_state):
     # fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20sleep%20settings%20profile%20weight&expires_in=604800&prompt=login%20consent&state={tempState}"
 
     # no sleep
-    fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20settings%20profile%20weight&expires_in=604800&prompt=login%20consent&state={tempState}"
+    #fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20settings%20profile%20weight&expires_in=604800&prompt=login%20consent&state={tempState}"
 
+    # google health
+    fitBit_Link = f"https://accounts.google.com/o/oauth2/v2/auth?client_id={tempClientID}&redirect_uri={tempURL}&prompt=consent&response_type=code&access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgooglehealth.activity_and_fitness.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgooglehealth.profile.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgooglehealth.settings.readonly&state={tempState}"
     return fitBit_Link
 
