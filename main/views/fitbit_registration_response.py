@@ -49,24 +49,29 @@ class FitbitRegistrationResponse(View):
                 state_info = request.GET["state"].split(";")
                 registration_request_id = state_info[0]
 
+                # get the registration request
                 registration_request = RegistrationRequest.objects.get(id=registration_request_id)
 
-                headers = {'Authorization': 'Basic ' + str(settings.FITBIT_AUTHORIZATION),
-                           'Content-Type' : 'application/x-www-form-urlencoded'}
+                headers = {'Content-Type' : 'application/x-www-form-urlencoded'}
                 
-                data = {'clientId': str(settings.FITBIT_CLIENT_ID),
+                data = {'client_id': str(settings.FITBIT_CLIENT_ID),
+                        'client_secret': str(settings.FITBIT_AUTHORIZATION),     
                         'code': request.GET["code"], 
-                        'redirect_uri' : f'{p.site_URL}fitbit-registration-response/',
+                        'redirect_uri' : f'{p.site_URL}fitbit-registration-response',
                         'grant_type' : 'authorization_code'}
 
-                fitBit_response = requests.post('https://api.fitbit.com/oauth2/token', headers=headers,data=data).json()
+                fitBit_response = requests.post('https://oauth2.googleapis.com/token', headers=headers,data=data).json()
 
                 logger.info("Register Fitbit, Response: ") 
                 logger.info(fitBit_response)
 
                 if 'access_token' in fitBit_response:
 
-                    fitbit_user, created = FitBitUser.objects.get_or_create(user_id=fitBit_response['user_id'])
+                    'get user id from call to google health api'
+                    headers = {'Authorization': 'Bearer ' + fitBit_response['access_token']}
+                    user_info = requests.get('https://health.googleapis.com/v4/users/me/identity', headers=headers).json()
+
+                    fitbit_user, created = FitBitUser.objects.get_or_create(user_id=user_info['healthUserId'])
 
                     fitbit_user.access_token = fitBit_response['access_token']
                     fitbit_user.refresh_token = fitBit_response['refresh_token']
