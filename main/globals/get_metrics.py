@@ -115,8 +115,30 @@ def get_metric_2(url, fitbit_user):
 
         r = r.json()
 
-        logger.info(f"Fitbit request: {url} ")
-        logger.info(f"Fitbit request: {r}")
+        if 'nextPageToken' in r:
+            'handle paginated results'
+            go = True
+            data = r["dataPoints"]
+
+            next_page_token = r['nextPageToken']
+
+            while go:
+                url2 = url + "&pageToken=" + next_page_token
+
+                r2 = requests.get(url2, headers=headers, timeout=10)
+
+                r2 = r2.json()
+                data.extend(r2["dataPoints"])
+
+                if not 'nextPageToken' in r2:
+                    go = False
+                else:
+                    next_page_token = r2['nextPageToken']
+
+        r = data
+
+        # logger.info(f"Fitbit request: {url} ")
+        # logger.info(f"Fitbit request: {r}")
 
         return r
     except Exception as e: 
@@ -141,6 +163,6 @@ def get_fitbit_link(temp_state):
     #fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20settings%20profile%20weight&expires_in=604800&prompt=login%20consent&state={tempState}"
 
     # google health
-    fitBit_Link = f"https://accounts.google.com/o/oauth2/v2/auth?client_id={tempClientID}&redirect_uri={tempURL}&prompt=consent&response_type=code&access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgooglehealth.activity_and_fitness.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgooglehealth.profile.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgooglehealth.settings.readonly&state={tempState}"
+    fitBit_Link = f"https://accounts.google.com/o/oauth2/v2/auth?client_id={tempClientID}&redirect_uri={tempURL}&prompt=consent&response_type=code&access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgooglehealth.activity_and_fitness.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgooglehealth.profile.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgooglehealth.settings.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgooglehealth.health_metrics_and_measurements.readonly&state={tempState}"
     return fitBit_Link
 
