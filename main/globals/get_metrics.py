@@ -47,7 +47,7 @@ def get_metrics_from_dict(fitbit_user_id, fitbit_metrics_dict):
         #         message = result[i]["status"]
         #         break
 
-        #multi thred pull
+        #multi thread pull
         if status == "success":
             try:
                 with Pool(len(fitbit_metrics_dict)) as p:
@@ -110,30 +110,30 @@ def get_metric_2(url, fitbit_user):
     headers = {'Authorization': 'Bearer ' + fitbit_user.access_token,
                'Accept-Language' :	'en_US'}    
 
-    try:            
-        r = requests.get(url, headers=headers, timeout=10)
+    # try:            
+    r = requests.get(url, headers=headers, timeout=10)
 
-        r = r.json()
+    r = r.json()
 
-        if 'nextPageToken' in r:
-            'handle paginated results'
-            go = True
-            data = r["dataPoints"]
+    if 'nextPageToken' in r:
+        'handle paginated results'
+        go = True
+        data = r["dataPoints"]
 
-            next_page_token = r['nextPageToken']
+        next_page_token = r['nextPageToken']
 
-            while go:
-                url2 = url + "&pageToken=" + next_page_token
+        while go:
+            url2 = url + "&pageToken=" + next_page_token
 
-                r2 = requests.get(url2, headers=headers, timeout=10)
+            r2 = requests.get(url2, headers=headers, timeout=10)
 
-                r2 = r2.json()
-                data.extend(r2["dataPoints"])
+            r2 = r2.json()
+            data.extend(r2["dataPoints"])
 
-                if not 'nextPageToken' in r2:
-                    go = False
-                else:
-                    next_page_token = r2['nextPageToken']
+            if not 'nextPageToken' in r2:
+                go = False
+            else:
+                next_page_token = r2['nextPageToken']
 
         r = data
 
@@ -141,9 +141,9 @@ def get_metric_2(url, fitbit_user):
         # logger.info(f"Fitbit request: {r}")
 
         return r
-    except Exception as e: 
-        logger.warning(f"get_metric_2 error: {e}")
-        return  {'status':'fail', 'message': str(e)}
+    # except Exception as e: 
+    #     logger.warning(f"get_metric_2 error: {e}")
+    #     return  {'status':'fail', 'message': str(e)}
 
 def get_fitbit_link(temp_state):
     p = Parameters.objects.first()
