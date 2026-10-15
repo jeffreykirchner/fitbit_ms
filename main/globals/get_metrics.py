@@ -140,7 +140,7 @@ def get_metric_2(url, fitbit_user):
         # logger.info(f"Fitbit request: {url} ")
         # logger.info(f"Fitbit request: {r}")
 
-        return r
+    return r
     # except Exception as e: 
     #     logger.warning(f"get_metric_2 error: {e}")
     #     return  {'status':'fail', 'message': str(e)}
