@@ -72,6 +72,9 @@ class FitBitUser(models.Model):
         check if the refresh token has expired and the access token needs refresh
         '''
 
+        if not self.refresh_token_expires_at:
+            return True
+
         if datetime.now(pytz.UTC) > self.refresh_token_expires_at:
             return True
         
