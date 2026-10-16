@@ -11,6 +11,7 @@ from main import views
 urlpatterns = [
 
     path('', views.root_path),
+    path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
 
     path('get-metrics', views.GetMetrics.as_view(), name="get_metrics"),
 
