@@ -1,10 +1,10 @@
 '''
 root path
 '''
-from django.http import HttpResponse
+from django.shortcuts import render
 
 def root_path(request):
     '''
-    return page not found for root path
+    show the study welcome page for root path
     '''
-    return HttpResponse('<h1>Page not found</h1>')
+    return render(request=request, template_name="fitbit_registration.html")

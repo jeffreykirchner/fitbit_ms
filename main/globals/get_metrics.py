@@ -74,10 +74,10 @@ def get_metrics_from_dict(fitbit_user_id, fitbit_metrics_dict):
     return {'status':status, 'message':message, 'result':result}
 
   #take fitbit api url and return response
-def get_metric(url, fitbit_user):
+def get_metric(end_point, fitbit_user):
     logger = logging.getLogger(__name__)        
 
-    r = get_metric_2(url, fitbit_user)
+    r = get_metric_2(end_point, fitbit_user)
 
     status = "success"
     message = ""
@@ -101,39 +101,53 @@ def get_metric(url, fitbit_user):
     
     return {'status':status, 'message': message, 'result' : r}
 
-def get_metric_2(url, fitbit_user):
+def get_metric_2(end_point, fitbit_user):
     '''
     try to pull metric
     '''
     logger = logging.getLogger(__name__)     
 
     headers = {'Authorization': 'Bearer ' + fitbit_user.access_token,
-               'Accept-Language' :	'en_US'}    
+               'Accept-Language' :	'en_US'}   
 
-    # try:            
-    r = requests.get(url, headers=headers, timeout=10)
+    url = end_point["url"]
+    method = end_point["method"]
+    payload = end_point["payload"]
 
-    r = r.json()
+    # try:
+    r = None
+    if method == "GET":
+        r = requests.get(url, params=payload, headers=headers, timeout=10)
+    else:
+        headers[ 'Content-Type'] =  'application/json' 
+        r = requests.post(url, json=payload, headers=headers, timeout=10)
+
+    r = r.json()   
 
     if 'nextPageToken' in r:
-        'handle paginated results'
-        go = True
         data = r["dataPoints"]
-
         next_page_token = r['nextPageToken']
+        
+        params2 = payload.copy()
 
-        while go:
-            url2 = url + "&pageToken=" + next_page_token
+        # Safety counter to prevent true infinite loops during debugging
+        max_pages = 10 
+        page_count = 0
 
-            r2 = requests.get(url2, headers=headers, timeout=10)
+        while next_page_token and page_count < max_pages:
+            # Assign the current token to params
+            params2['pageToken'] = next_page_token
 
-            r2 = r2.json()
-            data.extend(r2["dataPoints"])
-
-            if not 'nextPageToken' in r2:
-                go = False
-            else:
-                next_page_token = r2['nextPageToken']
+            r2 = requests.get(url, params=params2, headers=headers, timeout=10)
+            r2_json = r2.json()
+            
+            # Append new data points if they exist in the response
+            if "dataPoints" in r2_json:
+                data.extend(r2_json["dataPoints"])
+                
+            # Update the token for the next iteration
+            next_page_token = r2_json.get('nextPageToken', None)
+            page_count += 1
 
         r = data
 
