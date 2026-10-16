@@ -47,7 +47,7 @@ def get_metrics_from_dict(fitbit_user_id, fitbit_metrics_dict):
         #         message = result[i]["status"]
         #         break
 
-        #multi thred pull
+        #multi thread pull
         if status == "success":
             try:
                 with Pool(len(fitbit_metrics_dict)) as p:
@@ -74,10 +74,10 @@ def get_metrics_from_dict(fitbit_user_id, fitbit_metrics_dict):
     return {'status':status, 'message':message, 'result':result}
 
   #take fitbit api url and return response
-def get_metric(url, fitbit_user):
+def get_metric(end_point, fitbit_user):
     logger = logging.getLogger(__name__)        
 
-    r = get_metric_2(url, fitbit_user)
+    r = get_metric_2(end_point, fitbit_user)
 
     status = "success"
     message = ""
@@ -101,27 +101,63 @@ def get_metric(url, fitbit_user):
     
     return {'status':status, 'message': message, 'result' : r}
 
-def get_metric_2(url, fitbit_user):
+def get_metric_2(end_point, fitbit_user):
     '''
     try to pull metric
     '''
     logger = logging.getLogger(__name__)     
 
     headers = {'Authorization': 'Bearer ' + fitbit_user.access_token,
-               'Accept-Language' :	'en_US'}    
+               'Accept-Language' :	'en_US'}   
 
-    try:            
-        r = requests.get(url, headers=headers, timeout=10)
+    url = end_point["url"]
+    method = end_point["method"]
+    payload = end_point["payload"]
 
-        r = r.json()
+    # try:
+    r = None
+    if method == "GET":
+        r = requests.get(url, params=payload, headers=headers, timeout=10)
+    else:
+        headers[ 'Content-Type'] =  'application/json' 
+        r = requests.post(url, json=payload, headers=headers, timeout=10)
 
-        logger.info(f"Fitbit request: {url} ")
-        logger.info(f"Fitbit request: {r}")
+    r = r.json()   
 
-        return r
-    except Exception as e: 
-        logger.warning(f"get_metric_2 error: {e}")
-        return  {'status':'fail', 'message': str(e)}
+    if 'nextPageToken' in r:
+        data = r["dataPoints"]
+        next_page_token = r['nextPageToken']
+        
+        params2 = payload.copy()
+
+        # Safety counter to prevent true infinite loops during debugging
+        max_pages = 10 
+        page_count = 0
+
+        while next_page_token and page_count < max_pages:
+            # Assign the current token to params
+            params2['pageToken'] = next_page_token
+
+            r2 = requests.get(url, params=params2, headers=headers, timeout=10)
+            r2_json = r2.json()
+            
+            # Append new data points if they exist in the response
+            if "dataPoints" in r2_json:
+                data.extend(r2_json["dataPoints"])
+                
+            # Update the token for the next iteration
+            next_page_token = r2_json.get('nextPageToken', None)
+            page_count += 1
+
+        r = data
+
+        # logger.info(f"Fitbit request: {url} ")
+        # logger.info(f"Fitbit request: {r}")
+
+    return r
+    # except Exception as e: 
+    #     logger.warning(f"get_metric_2 error: {e}")
+    #     return  {'status':'fail', 'message': str(e)}
 
 def get_fitbit_link(temp_state):
     p = Parameters.objects.first()
@@ -141,6 +177,6 @@ def get_fitbit_link(temp_state):
     #fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20settings%20profile%20weight&expires_in=604800&prompt=login%20consent&state={tempState}"
 
     # google health
-    fitBit_Link = f"https://accounts.google.com/o/oauth2/v2/auth?client_id={tempClientID}&redirect_uri={tempURL}&prompt=consent&response_type=code&access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgooglehealth.activity_and_fitness.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgooglehealth.profile.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgooglehealth.settings.readonly&state={tempState}"
+    fitBit_Link = f"https://accounts.google.com/o/oauth2/v2/auth?client_id={tempClientID}&redirect_uri={tempURL}&prompt=consent&response_type=code&access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgooglehealth.activity_and_fitness.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgooglehealth.profile.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgooglehealth.settings.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgooglehealth.health_metrics_and_measurements.readonly&state={tempState}"
     return fitBit_Link
 

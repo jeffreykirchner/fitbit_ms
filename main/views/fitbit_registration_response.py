@@ -7,11 +7,13 @@ import logging
 import json
 import requests
 import traceback
+import pytz
 
 from django.views import View
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.conf import settings
+from datetime import datetime, timedelta
 
 from main.globals import get_fitbit_link
 
@@ -75,6 +77,7 @@ class FitbitRegistrationResponse(View):
 
                     fitbit_user.access_token = fitBit_response['access_token']
                     fitbit_user.refresh_token = fitBit_response['refresh_token']
+                    fitbit_user.refresh_token_expires_at =  datetime.now(pytz.UTC) + timedelta(seconds=fitBit_response['expires_in']-100)
 
                     fitbit_user.save()
                 else:
