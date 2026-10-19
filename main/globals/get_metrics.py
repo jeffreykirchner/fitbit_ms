@@ -125,7 +125,7 @@ def get_metric_2(end_point, fitbit_user):
     r = r.json()   
 
     if 'nextPageToken' in r:
-        data = r["dataPoints"]
+        data = r["dataPoints"].copy()
         next_page_token = r['nextPageToken']
         
         params2 = payload.copy()
@@ -149,7 +149,7 @@ def get_metric_2(end_point, fitbit_user):
             next_page_token = r2_json.get('nextPageToken', None)
             page_count += 1
 
-        r = data
+        r["dataPoints"] = data
 
         # logger.info(f"Fitbit request: {url} ")
         # logger.info(f"Fitbit request: {r}")
