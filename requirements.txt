@@ -1,8 +1,8 @@
 asgiref==3.8.1
 astroid==4.0.2
-Django==5.2.16
+Django==5.2.17
 django-filter==25.2
-djangorestframework==3.16.1
+djangorestframework==3.18.2
 gunicorn==23.0.0
 isort==7.0.0
 lazy-object-proxy==1.12.0
