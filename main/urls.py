@@ -12,6 +12,7 @@ urlpatterns = [
 
     path('', views.root_path),
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
+    path('terms-of-service/', views.terms_of_service, name='terms_of_service'),
 
     path('get-metrics', views.GetMetrics.as_view(), name="get_metrics"),
 
